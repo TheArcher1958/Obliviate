@@ -8,9 +8,11 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-
+  MediaQueryData queryData;
   @override
   void initState() {
+    //queryData = MediaQuery.of(context);
+
     FirebaseAuth.instance
         .authStateChanges()
         .listen((User user) {
@@ -40,8 +42,9 @@ class _LoginScreenState extends State<LoginScreen> {
     return await FirebaseAuth.instance.signInWithCredential(credential);
   }
 
-  void signInAnonymously() async {
+  Future<UserCredential> signInAnonymously() async {
     UserCredential userCredential = await FirebaseAuth.instance.signInAnonymously();
+    return userCredential;
   }
 
   FirebaseAuth auth = FirebaseAuth.instance;
@@ -49,11 +52,21 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        children: [
-          ElevatedButton(onPressed: () {}, child: Text('Continue as Guest')),
-          ElevatedButton(onPressed: signInWithGoogle, child: Text('Sign in with Google'))
-        ],
+      body: Container(
+        width: MediaQuery.of(context).size.width,
+        height: MediaQuery.of(context).size.height,
+        decoration: BoxDecoration(
+            gradient: LinearGradient(
+                begin: Alignment.topRight,
+                end: Alignment.bottomLeft,
+                colors: [Colors.purple, Colors.blue])
+        ),
+        child: Column(
+          children: [
+            ElevatedButton(onPressed: signInAnonymously, child: Text('Continue as Guest')),
+            ElevatedButton(onPressed: signInWithGoogle, child: Text('Sign in with Google'))
+          ],
+        ),
       ),
     );
   }

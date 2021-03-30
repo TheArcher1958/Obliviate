@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_analytics/observer.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:hp_multiplayer_trivia/LoginScreen.dart';
 
 
 Future<void> main() async {
@@ -23,7 +24,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: MyHomePage(),
+      home: LoginScreen(),
     );
   }
 }
@@ -43,26 +44,36 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       body: Container(
         color: Colors.white,
-        child: StreamBuilder<QuerySnapshot>(
-          stream: users.snapshots(),
-          builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-            if (snapshot.hasError) {
-              return Text('Something went wrong');
-            }
+        child: Column(
+          children: [
+            StreamBuilder<QuerySnapshot>(
+              stream: users.snapshots(),
+              builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                if (snapshot.hasError) {
+                  return Text('Something went wrong');
+                }
 
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return Text("Loading");
-            }
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Text("Loading");
+                }
 
-            return new ListView(
-              children: snapshot.data.docs.map((DocumentSnapshot document) {
-                return Column(children: [
-                  Text(document.data()['name']),
-                  Text(document.data()['age']),
-                ],);
-              }).toList(),
-            );
-          },
+                return new ListView(
+                  children: snapshot.data.docs.map((DocumentSnapshot document) {
+                    return Column(children: [
+                      Text(document.data()['name']),
+                      Text(document.data()['age']),
+                    ],);
+                  }).toList(),
+                );
+              },
+            ),
+            ElevatedButton(
+              onPressed: () {
+
+              },
+              child: Text('Loading Screen'),
+            )
+          ],
         ),
       ),
     );
