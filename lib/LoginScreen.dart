@@ -9,6 +9,7 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   MediaQueryData queryData;
+
   @override
   void initState() {
     //queryData = MediaQuery.of(context);
@@ -17,7 +18,7 @@ class _LoginScreenState extends State<LoginScreen> {
         .authStateChanges()
         .listen((User user) {
       if (user == null) {
-        print('User is currently signed out!');
+//        print('User is currently signed out!');
       } else {
         print('User is signed in!');
       }
@@ -59,12 +60,15 @@ class _LoginScreenState extends State<LoginScreen> {
             gradient: LinearGradient(
                 begin: Alignment.topRight,
                 end: Alignment.bottomLeft,
-                colors: [Colors.purple, Colors.blue])
+                colors: [Color(0x141e30), Color(0x243b55)])
         ),
         child: Column(
           children: [
             ElevatedButton(onPressed: signInAnonymously, child: Text('Continue as Guest')),
-            ElevatedButton(onPressed: signInWithGoogle, child: Text('Sign in with Google'))
+            ElevatedButton(onPressed: signInWithGoogle, child: Text('Sign in with Google')),
+            ElevatedButton(onPressed: () {
+              Navigator.pushNamed(context, "/register");
+            }, child: Text('Sign Up')),
           ],
         ),
       ),

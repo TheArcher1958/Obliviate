@@ -5,7 +5,11 @@ import 'package:flutter/material.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_analytics/observer.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:hp_multiplayer_trivia/HomeScreen.dart';
 import 'package:hp_multiplayer_trivia/LoginScreen.dart';
+import 'package:hp_multiplayer_trivia/RegisterScreen.dart';
+import 'package:hp_multiplayer_trivia/LoadingScreen.dart';
+import 'package:hp_multiplayer_trivia/globals.dart';
 
 
 Future<void> main() async {
@@ -22,9 +26,30 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Firebase Analytics Demo',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+//        brightness: Brightness.dark,
+        accentColor: mild_blue,
+        primarySwatch: darker_blue,
+//        scaffoldBackgroundColor: mild_blue,
+        fontFamily: 'Hind',
+        primaryTextTheme: TextTheme(
+          headline6: TextStyle(fontSize: 40.0, fontFamily: "HP",color: Colors.white),
+          headline1: TextStyle(fontSize: 65.0, fontFamily: "HP"),
+          bodyText2: TextStyle(fontSize: 14.0, fontFamily: "Hind",color: Colors.white),
+          bodyText1: TextStyle(fontSize: 14.0, fontFamily: "Hind",color: Colors.white),
+        ),
+//        textTheme: TextTheme(
+//          headline6: TextStyle(fontSize: 72.0, fontFamily: "HP"),
+//          headline1: TextStyle(fontSize: 72.0, fontFamily: "HP"),
+//          bodyText2: TextStyle(fontSize: 14.0, fontFamily: "Hind"),
+//        ),
       ),
-      home: LoginScreen(),
+      home: HomeScreen(),
+      routes: {
+        //'/homeTab': (context) => FirstScreen(),
+        '/register': (context) => RegisterScreen(),
+        '/login': (context) => LoginScreen(),
+        '/loading': (context) => LoadingScreen(),
+      },
     );
   }
 }
