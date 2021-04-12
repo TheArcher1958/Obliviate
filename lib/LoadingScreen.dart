@@ -1,4 +1,9 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:hp_multiplayer_trivia/globals.dart';
+
+import 'HomeScreen.dart';
+import 'LoginScreen.dart';
 
 class LoadingScreen extends StatefulWidget {
   @override
@@ -9,7 +14,32 @@ class _LoadingScreenState extends State<LoadingScreen> {
 
   @override
   void initState() {
-    print("MAde it");
+    super.initState();
+    Future.delayed(Duration(seconds: 1), () {
+      FirebaseAuth.instance
+          .authStateChanges()
+          .listen((User user) {
+        if (user == null) {
+
+          print('User is currently signed out!');
+          //Navigator.pushNamed(context, "/login");
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => LoginScreen()),
+          );
+        } else {
+          print('User is signed in!');
+          globalUser = user;
+          //Navigator.pushNamed(context, "/home");
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => HomeScreen()),
+          );
+        }
+      });
+    });
+
+
   }
 
   @override
@@ -24,16 +54,7 @@ class _LoadingScreenState extends State<LoadingScreen> {
                 end: Alignment.bottomLeft,
                 colors: [Color(0xff141e30), Color(0xff243b55)])
         ),
-        child: Column(
-          children: [
-            ElevatedButton(
-              onPressed: () {
-                print('Oi');
-              },
-              child: Text('Hello World'),
-            ),
-          ],
-        ),
+        //child:
       ),
     );
   }

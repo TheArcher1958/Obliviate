@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
+User globalUser;
 //Color darker_blue = Color(0xff141e30);
 //Color mild_blue = Color(0xff243b55);
 Map<int, Color> color = {

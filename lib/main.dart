@@ -7,6 +7,7 @@ import 'package:firebase_analytics/observer.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:hp_multiplayer_trivia/HomeScreen.dart';
 import 'package:hp_multiplayer_trivia/LoginScreen.dart';
+import 'package:hp_multiplayer_trivia/QuestionScreen.dart';
 import 'package:hp_multiplayer_trivia/RegisterScreen.dart';
 import 'package:hp_multiplayer_trivia/LoadingScreen.dart';
 import 'package:hp_multiplayer_trivia/globals.dart';
@@ -43,12 +44,14 @@ class MyApp extends StatelessWidget {
 //          bodyText2: TextStyle(fontSize: 14.0, fontFamily: "Hind"),
 //        ),
       ),
-      home: HomeScreen(),
+      //home: LoadingScreen(),
+      initialRoute: '/',
       routes: {
-        //'/homeTab': (context) => FirstScreen(),
+        '/home': (context) => HomeScreen(),
         '/register': (context) => RegisterScreen(),
         '/login': (context) => LoginScreen(),
-        '/loading': (context) => LoadingScreen(),
+        '/': (context) => LoadingScreen(),
+        //'/question': (context) => QuestionScreen(''),
       },
     );
   }

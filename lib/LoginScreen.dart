@@ -8,11 +8,11 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  MediaQueryData queryData;
 
   @override
   void initState() {
     //queryData = MediaQuery.of(context);
+
 
     FirebaseAuth.instance
         .authStateChanges()
@@ -21,6 +21,7 @@ class _LoginScreenState extends State<LoginScreen> {
 //        print('User is currently signed out!');
       } else {
         print('User is signed in!');
+        Navigator.pushNamed(context, "/loading");
       }
     });
   }
