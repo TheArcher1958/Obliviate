@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'Model/QuestionModel.dart';
+import '../Model/QuestionModel.dart';
 
 class QuestionScreen extends StatefulWidget {
   final List<Question> questionsList;

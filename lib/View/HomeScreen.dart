@@ -1,5 +1,7 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'globals.dart';
+import 'package:hp_multiplayer_trivia/View/GamemodesScreen.dart';
+import '../globals.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -7,33 +9,36 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-
   int tabIndex = 1;
   List<Widget> listScreens;
 
   @override
   void initState() {
-    super.initState();
+    //super.initState();
     listScreens = [
       Text('Account'),
-      Text('Play'),
+      GamemodesScreen(),
       Text('Settings'),
     ];
 
     WidgetsBinding.instance.addPostFrameCallback((_) => {
       Future.delayed(Duration(milliseconds: 500)).then((_) {
+
         if (globalUser != null) {
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
             backgroundColor: Color(0xff303c42),
-            content: Text(globalUser.displayName != "" ? 'Logged in as ${globalUser.displayName}' : 'Logged in as Guest',
+            content: Text(
+              globalUser.displayName != "" && globalUser.displayName
+                  != null
+                  ? 'Logged in as ${globalUser.displayName}'
+                  : 'Logged in as Guest',
               style: TextStyle(
                 color: Colors.white,
               ),
             ),
           ));
         }
-      }
-      )
+      })
     });
   }
 

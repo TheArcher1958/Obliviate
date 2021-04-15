@@ -20,8 +20,8 @@ class _LoginScreenState extends State<LoginScreen> {
       if (user == null) {
 //        print('User is currently signed out!');
       } else {
-        print('User is signed in!');
-        Navigator.pushNamed(context, "/loading");
+        //print('User is signed in!');
+        Navigator.pushReplacementNamed(context, "/");
       }
     });
   }
@@ -54,23 +54,25 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        width: MediaQuery.of(context).size.width,
-        height: MediaQuery.of(context).size.height,
-        decoration: BoxDecoration(
-            gradient: LinearGradient(
-                begin: Alignment.topRight,
-                end: Alignment.bottomLeft,
-                colors: [Color(0x141e30), Color(0x243b55)])
-        ),
-        child: Column(
-          children: [
-            ElevatedButton(onPressed: signInAnonymously, child: Text('Continue as Guest')),
-            ElevatedButton(onPressed: signInWithGoogle, child: Text('Sign in with Google')),
-            ElevatedButton(onPressed: () {
-              Navigator.pushNamed(context, "/register");
-            }, child: Text('Sign Up')),
-          ],
+      body: SafeArea(
+        child: Container(
+          width: MediaQuery.of(context).size.width,
+          height: MediaQuery.of(context).size.height,
+          decoration: BoxDecoration(
+              gradient: LinearGradient(
+                  begin: Alignment.topRight,
+                  end: Alignment.bottomLeft,
+                  colors: [Color(0x141e30), Color(0x243b55)])
+          ),
+          child: Column(
+            children: [
+              ElevatedButton(onPressed: signInAnonymously, child: Text('Continue as Guest')),
+              ElevatedButton(onPressed: signInWithGoogle, child: Text('Sign in with Google')),
+              ElevatedButton(onPressed: () {
+                Navigator.pushNamed(context, "/register");
+              }, child: Text('Sign Up')),
+            ],
+          ),
         ),
       ),
     );

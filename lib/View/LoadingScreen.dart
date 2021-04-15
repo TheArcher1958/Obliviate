@@ -12,33 +12,41 @@ class LoadingScreen extends StatefulWidget {
 
 class _LoadingScreenState extends State<LoadingScreen> {
 
+  bool caught = false;
   @override
   void initState() {
     super.initState();
+    print(caught);
+    if(caught == true) {
+      return;
+    }
+
+
     Future.delayed(Duration(seconds: 1), () {
-      FirebaseAuth.instance
-          .authStateChanges()
-          .listen((User user) {
-        if (user == null) {
-
-          print('User is currently signed out!');
-          //Navigator.pushNamed(context, "/login");
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => LoginScreen()),
-          );
-        } else {
-          print('User is signed in!');
-          globalUser = user;
-          //Navigator.pushNamed(context, "/home");
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => HomeScreen()),
-          );
-        }
-      });
+      if(!caught) {
+        caught = true;
+        FirebaseAuth.instance
+            .authStateChanges()
+            .listen((User user) {
+          if (user == null) {
+            print('User is currently signed out!');
+            //Navigator.pushNamed(context, "/login");
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => LoginScreen()),
+            );
+          } else {
+            print('User is signed in!');
+            globalUser = user;
+            //Navigator.pushNamed(context, "/home");
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => HomeScreen()),
+            );
+          }
+        });
+      }
     });
-
 
   }
 
