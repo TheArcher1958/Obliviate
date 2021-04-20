@@ -55,7 +55,7 @@ class _SearchingScreenState extends State<SearchingScreen> {
             WidgetsBinding.instance.addPostFrameCallback((_){
               Navigator.pushReplacement(
                 context,
-                MaterialPageRoute(builder: (context) => QuestionScreen([])),
+                MaterialPageRoute(builder: (context) => QuestionScreen(userDocument['gameID'])),
               );
             });
 

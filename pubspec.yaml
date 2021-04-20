@@ -27,7 +27,8 @@ dependencies:
   firebase_analytics: ^5.0.2
   cloud_firestore: ^1.0.2
   firebase_auth: ^1.0.1
-  google_sign_in: "^4.5.1"
+  google_sign_in: ^4.5.1
+  simple_animations: ^3.0.3
 
 
 
@@ -70,6 +71,12 @@ flutter:
     - family: HP
       fonts:
         - asset: fonts/HP.TTF
+    - family: Noto
+      fonts:
+        - asset: fonts/NotoSansKR-Regular.otf
+    - family: Lumos
+      fonts:
+        - asset: fonts/Lumos.ttf
   #       - asset: fonts/Schyler-Italic.ttf
   #         style: italic
   #   - family: Trajan Pro

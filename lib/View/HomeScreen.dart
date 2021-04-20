@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hp_multiplayer_trivia/View/GamemodesScreen.dart';
+import 'package:hp_multiplayer_trivia/View/questionTestScreen.dart';
 import '../globals.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -18,7 +19,7 @@ class _HomeScreenState extends State<HomeScreen> {
     listScreens = [
       Text('Account'),
       GamemodesScreen(),
-      Text('Settings'),
+      testQuestions(),
     ];
 
     WidgetsBinding.instance.addPostFrameCallback((_) => {

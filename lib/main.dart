@@ -35,8 +35,8 @@ class MyApp extends StatelessWidget {
         primaryTextTheme: TextTheme(
           headline6: TextStyle(fontSize: 40.0, fontFamily: "HP",color: Colors.white),
           headline1: TextStyle(fontSize: 65.0, fontFamily: "HP"),
-          bodyText2: TextStyle(fontSize: 14.0, fontFamily: "Hind",color: Colors.white),
-          bodyText1: TextStyle(fontSize: 14.0, fontFamily: "Hind",color: Colors.white),
+          bodyText2: TextStyle(fontSize: 14.0, fontFamily: "Dum1",color: Colors.white),
+          bodyText1: TextStyle(fontSize: 14.0, fontFamily: "Dum1",color: Colors.white),
         ),
       ),
       initialRoute: '/',

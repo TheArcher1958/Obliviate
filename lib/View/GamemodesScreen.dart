@@ -20,8 +20,6 @@ grabQuestion() {
 
 CollectionReference matches = FirebaseFirestore.instance.collection('matchmaking');
 Future<void> addUser() {
-  // Call the user's CollectionReference to add a new user
-
   return matches
       .doc(globalUser.uid)
       .set({
