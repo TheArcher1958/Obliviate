@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import '../Model/QuestionModel.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import '../globals.dart';
+
 
 class QuestionScreen extends StatefulWidget {
   final String gameID;
@@ -12,14 +14,18 @@ class QuestionScreen extends StatefulWidget {
 
 class _QuestionScreenState extends State<QuestionScreen> with SingleTickerProviderStateMixin {
   var counter = 0;
+  var iAnswered = false;
+  var buttonsLocked = false;
   var ques = [];
+  var myAnswers = [];
+  var opponentAnswers = [];
   var _controller;
   var animation;
+  DocumentReference gameStream;
   var buttonColors = [Colors.black26,Colors.black26,Colors.black26,Colors.black26];
 
   @override
   void initState() {
-
     _controller = AnimationController(vsync: this, duration: Duration(seconds: 1));
     animation = Tween(
         begin: 0.0,
@@ -28,8 +34,16 @@ class _QuestionScreenState extends State<QuestionScreen> with SingleTickerProvid
 
     print('gameID: ' + widget.gameID);
 
-    DocumentReference gameStream = FirebaseFirestore.instance.collection('games').doc(widget.gameID);
+    gameStream = FirebaseFirestore.instance.collection('games').doc(widget.gameID);
     gameStream.snapshots().listen((querySnapshot) {
+      var playerIDs = querySnapshot.data()['playersIds'];
+      print(counter);
+
+      var opponentsID = playerIDs[0] == globalUser.uid ? playerIDs[1] : playerIDs[0];
+
+      // optimize this better in the future?
+      opponentAnswers = (querySnapshot.data()['answers'][opponentsID]);
+      ensureOpponentAnswered();
       if(ques.length == 0 || ques.isEmpty) {
         setState(() {
           ques = querySnapshot.data()['questions'];
@@ -41,7 +55,30 @@ class _QuestionScreenState extends State<QuestionScreen> with SingleTickerProvid
   }
 
 
+  void ensureOpponentAnswered() {
+    if(opponentAnswers != null) {
+      if (opponentAnswers.length == counter + 1 &&
+          myAnswers.length == counter + 1 && iAnswered == false) {
+        iAnswered = true;
+        Future.delayed(Duration(seconds: 1), () {
+          _controller.value = 0.0;
+          setState(() {
+            print('switching it up!');
+            counter += 1;
+            iAnswered = false;
+            buttonsLocked = false;
+            buttonColors =
+            [Colors.black26, Colors.black26, Colors.black26, Colors.black26];
+          });
+        });
+      }
+    }
+  }
+
   void switchQuestion(optionText, i) {
+    setState(() {
+      buttonsLocked = true;
+    });
     if(optionText == ques[counter]['answer']) {
       setState(() {
         buttonColors[i] = Colors.green;
@@ -51,14 +88,10 @@ class _QuestionScreenState extends State<QuestionScreen> with SingleTickerProvid
         buttonColors[i] = Colors.red;
       });
     }
-
-    Future.delayed(Duration(seconds: 1), (){
-      _controller.value = 0.0;
-      setState(() {
-        counter += 1;
-        buttonColors = [Colors.black26,Colors.black26,Colors.black26,Colors.black26];
-      });
-    });
+    myAnswers.add(i);
+    gameStream.update({'answers.' + globalUser.uid: myAnswers})
+        .then((value) => ensureOpponentAnswered())
+        .catchError((error) => print("Failed to update user: $error"));
   }
 
 
@@ -66,7 +99,6 @@ class _QuestionScreenState extends State<QuestionScreen> with SingleTickerProvid
 
   @override
   void dispose() {
-    // TODO: implement dispose
     _controller.dispose();
     super.dispose();
   }
@@ -156,8 +188,12 @@ class _QuestionScreenState extends State<QuestionScreen> with SingleTickerProvid
                                   backgroundColor: MaterialStateProperty.all<
                                       Color>(Colors.transparent)),
                                   onPressed: () {
-                                    switchQuestion(
-                                        ques[counter]['options'][i], i);
+                                    if (!buttonsLocked) {
+                                      switchQuestion(
+                                          ques[counter]['options'][i], i);
+                                    } else {
+                                      return null;
+                                    }
                                   },
                                   child: Padding(
                                     padding: const EdgeInsets.fromLTRB(
