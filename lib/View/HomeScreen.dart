@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hp_multiplayer_trivia/View/GamemodesScreen.dart';
+import 'package:hp_multiplayer_trivia/View/ResultsScreen.dart';
+import 'package:hp_multiplayer_trivia/View/ResultsTestScreen.dart';
 import 'package:hp_multiplayer_trivia/View/questionTestScreen.dart';
 import '../globals.dart';
 
@@ -17,7 +19,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     //super.initState();
     listScreens = [
-      Text('Account'),
+      ResultsTestScreen(),
       GamemodesScreen(),
       testQuestions(),
     ];

@@ -29,6 +29,7 @@ dependencies:
   firebase_auth: ^1.0.1
   google_sign_in: ^4.5.1
   simple_animations: ^3.0.3
+  flutter_slidable: ^0.6.0
 
 
 

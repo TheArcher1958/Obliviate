@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:hp_multiplayer_trivia/globals.dart';
-
+import 'package:flutter/services.dart';
 import 'HomeScreen.dart';
 import 'LoginScreen.dart';
 
@@ -16,6 +16,7 @@ class _LoadingScreenState extends State<LoadingScreen> {
   @override
   void initState() {
     super.initState();
+    SystemChrome.setEnabledSystemUIOverlays([]);
     print(caught);
     if(caught == true) {
       return;
