@@ -127,8 +127,8 @@ class _QuestionScreenState extends State<QuestionScreen> with TickerProviderStat
         height: MediaQuery.of(context).size.height,
         decoration: BoxDecoration(
           gradient: LinearGradient(
-              begin: Alignment.topRight,
-              end: Alignment.bottomLeft,
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
               colors: [Color(0xff141e30), Color(0xff243b55)]
           ),
         ),
@@ -138,7 +138,7 @@ class _QuestionScreenState extends State<QuestionScreen> with TickerProviderStat
         WidgetsBinding.instance.addPostFrameCallback((_) => {
           Navigator.pushReplacement(
               context,
-              MaterialPageRoute(builder: (context) => ResultsScreen(myAnswers, opponentAnswers, ques)))
+              MaterialPageRoute(builder: (context) => ResultsScreen(myAnswers, opponentAnswers, ques, widget.gameID)))
         });
 
         return Container(

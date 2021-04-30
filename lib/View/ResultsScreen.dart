@@ -9,7 +9,8 @@ class ResultsScreen extends StatefulWidget {
   final List myAnswers;
   final List opponentAnswers;
   final List ques;
-  ResultsScreen(this.myAnswers,this.opponentAnswers,this.ques, {Key key}): super(key: key);
+  final String gameID;
+  ResultsScreen(this.myAnswers,this.opponentAnswers,this.ques, this.gameID, {Key key}): super(key: key);
   @override
   _ResultsScreenState createState() => _ResultsScreenState();
 }
@@ -68,24 +69,49 @@ class _ResultsScreenState extends State<ResultsScreen> with TickerProviderStateM
     return [myScore, opponentsScore];
   }
 
-  CollectionReference userDoc = FirebaseFirestore.instance.collection('matchmaking');
-  Future<void> deleteMatchmakingDoc() {
-    return userDoc
-        .doc(globalUser.uid)
-        .delete()
-        .then((value) => {
+//  Future<void> deleteMatchmakingDoc() {
+//    return userDoc
+//        .doc(globalUser.uid)
+//        .delete()
+//        .then((value) => {
+//
+//    }).catchError((error) => print('Unable to delete document.'));
+//  }
 
-    }).catchError((error) => print('Unable to delete document.'));
+  CollectionReference users = FirebaseFirestore.instance.collection('users');
+  CollectionReference userDoc = FirebaseFirestore.instance.collection('matchmaking');
+  Future<void> batchCleanUp() async {
+
+    WriteBatch batch = FirebaseFirestore.instance.batch();
+
+    final snapShot = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(globalUser.uid)
+        .get();
+
+    if (snapShot == null || !snapShot.exists) {
+      return users.get().then((querySnapshot) {
+        batch.set(users.doc(globalUser.uid), {"name": globalUser.isAnonymous ? "Guest" : globalUser.displayName,"score": FieldValue.increment(getScoresResults()[0]), "matches": FieldValue.arrayUnion([widget.gameID])});
+        batch.delete(userDoc.doc(globalUser.uid));
+        return batch.commit();
+      });
+    } else {
+      return users.get().then((querySnapshot) {
+        batch.update(users.doc(globalUser.uid), {"score": FieldValue.increment(getScoresResults()[0]), "matches": FieldValue.arrayUnion([widget.gameID])});
+        batch.delete(userDoc.doc(globalUser.uid));
+        return batch.commit();
+      });
+    }
   }
 
+
   @override
-    void initState() {
+    void initState()  {
       myAnswers = widget.myAnswers;
       opponentAnswers = widget.opponentAnswers;
       ques = widget.ques;
 
-
-      deleteMatchmakingDoc();
+      batchCleanUp();
       super.initState();
     }
 
@@ -101,8 +127,8 @@ class _ResultsScreenState extends State<ResultsScreen> with TickerProviderStateM
         height: MediaQuery.of(context).size.height,
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            begin: Alignment.topRight,
-            end: Alignment.bottomLeft,
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
             colors: [Color(0xff141e30), Color(0xff243b55)])
         ),
         child: ListView(
@@ -123,7 +149,7 @@ class _ResultsScreenState extends State<ResultsScreen> with TickerProviderStateM
                           padding: const EdgeInsets.all(8.0),
                           child: const ListTile(
 
-                            leading: Icon(Icons.lightbulb, color: Colors.white,),
+                            leading: Icon(Icons.lightbulb, color: Colors.amber,),
                             title: Text('Did you know?', style: TextStyle(color: Colors.white),),
                             subtitle: Text('Swipe each card to the right to see your result. Swipe to the left to see your opponents result.', style: TextStyle(color: Colors.white70)),
                           ),

@@ -24,9 +24,12 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
     return MaterialApp(
-      title: 'Firebase Analytics Demo',
+      title: 'Obliviate',
       theme: ThemeData(
 //        brightness: Brightness.dark,
         accentColor: mild_blue,
@@ -36,8 +39,8 @@ class MyApp extends StatelessWidget {
         primaryTextTheme: TextTheme(
           headline6: TextStyle(fontSize: 40.0, fontFamily: "HP",color: Colors.white),
           headline1: TextStyle(fontSize: 65.0, fontFamily: "HP"),
-          bodyText2: TextStyle(fontSize: 14.0, fontFamily: "Dum1",color: Colors.white),
-          bodyText1: TextStyle(fontSize: 14.0, fontFamily: "Dum1",color: Colors.white),
+          bodyText2: TextStyle(fontSize: 14.0, fontFamily: "Lumos",color: Colors.white),
+          bodyText1: TextStyle(fontSize: 14.0, fontFamily: "Lumos",color: Colors.white),
         ),
       ),
       initialRoute: '/',

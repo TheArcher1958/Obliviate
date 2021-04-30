@@ -40,28 +40,56 @@ class _GamemodesScreenState extends State<GamemodesScreen> {
   @override
   Widget build(BuildContext context) {
     return Container(
+      decoration: BoxDecoration(
+          gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [Color(0xff141e30), Color(0xff243b55)])
+      ),
       width: MediaQuery.of(context).size.width,
       child: Column(
-
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          ElevatedButton(
-            onPressed: () {
-              grabQuestion();
-            },
-            child: Text('Demo'),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(15, 8, 15, 0),
+            child: Card(
+              color: Color(0xff1a2a47),
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: const ListTile(
+
+                  leading: Icon(Icons.lightbulb, color: Colors.amber,),
+                  subtitle: Text('Multiplayer is the only mode right now, but more are coming soon!', style: TextStyle(color: Colors.white70,fontSize: 18)),
+                ),
+              ),
+            ),
           ),
-          ElevatedButton(
-            onPressed: () async {
-              await addUser();
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => SearchingScreen()),
-              );
-            },
-            child: Text('Matching'),
+
+          SizedBox(height: 80,),
+
+          SizedBox(
+            width: 200,
+            height: 70,
+            child: ElevatedButton(
+              style: ButtonStyle(elevation: MaterialStateProperty.all<double>(10.0),
+                  backgroundColor: MaterialStateProperty.all<
+                  Color>(Color(0xff6c59e6)),
+
+              ),
+              onPressed: () async {
+                await addUser();
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => SearchingScreen()),
+                );
+              },
+              child: Text('Multiplayer', style: TextStyle(fontSize: 24,fontWeight: FontWeight.bold),),
+            ),
           ),
+
+          SizedBox(height: 60,),
+
         ],
       ),
     );

@@ -11,10 +11,10 @@ class SearchingScreen extends StatefulWidget {
 
 class _SearchingScreenState extends State<SearchingScreen> {
 
-  void initState() {
-    super.initState();
-
-  }
+//  void initState() {
+//    super.initState();
+//
+//  }
 
   CollectionReference userDoc = FirebaseFirestore.instance.collection('matchmaking');
 
@@ -26,7 +26,8 @@ class _SearchingScreenState extends State<SearchingScreen> {
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(builder: (context) => HomeScreen()),
-          )
+          ),
+      print('Canceled')
     }).catchError((error) => print('Unable to delete document.'));
   }
 
@@ -63,8 +64,8 @@ class _SearchingScreenState extends State<SearchingScreen> {
               height: MediaQuery.of(context).size.height,
               decoration: BoxDecoration(
                 gradient: LinearGradient(
-                  begin: Alignment.topRight,
-                  end: Alignment.bottomLeft,
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
                   colors: [Color(0xff141e30), Color(0xff243b55)]
                 ),
               ),
