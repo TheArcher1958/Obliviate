@@ -1,10 +1,13 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:hp_multiplayer_trivia/View/CreditsScreen.dart';
 import 'package:hp_multiplayer_trivia/View/GamemodesScreen.dart';
 import 'package:hp_multiplayer_trivia/View/GetInvolvedScreen.dart';
 import 'package:hp_multiplayer_trivia/View/LeaderboardsScreen.dart';
-import 'package:hp_multiplayer_trivia/View/questionTestScreen.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../globals.dart';
+import 'LoadingScreen.dart';
 import 'SettingsScreen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -15,6 +18,9 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int tabIndex = 1;
   List<Widget> listScreens;
+
+  void _launchURL(_url) async =>
+      await canLaunch(_url) ? await launch(_url) : throw 'Could not launch $_url';
 
   @override
   void initState() {
@@ -49,7 +55,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Obliviate',style: TextStyle(fontSize: 40)),
+        title: Text('Obliviate',style: TextStyle(fontSize: convW(40,context))),
         elevation: 0,
       ),
       body: listScreens[tabIndex],
@@ -96,59 +102,74 @@ class _HomeScreenState extends State<HomeScreen> {
                 decoration: BoxDecoration(
                   shape: BoxShape.rectangle,
                 color: Colors.amber,
-                  image: DecorationImage(image: AssetImage("images/Logo.png"),scale: 5.0,
+                  image: DecorationImage(image: AssetImage("images/Logo.png"),scale: convH(4.5,context),
                     fit: BoxFit.none,
                   ),
                 ),
               ),
-              SizedBox(height: 10,),
+              SizedBox(height: convH(10,context),),
               ListTile(
                 leading: Icon(Icons.person_remove, color: Colors.white,),
-                title: Text('Sign Out',style: TextStyle(fontSize: 16, color: Colors.white, )),
+                title: Text('Sign Out',style: TextStyle(fontSize: convW(16,context), color: Colors.white, )),
                 onTap: () {
                   Navigator.of(context).pop();
+                  FirebaseAuth.instance.signOut();
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) => LoadingScreen()),
+                  );
+                },
+              ),
+//              ListTile(
+//                leading: Icon(Icons.info, color: Colors.white,),
+//                title: Text('App Info',style: TextStyle(fontSize: 16, color: Colors.white, )),
+//                onTap: () {
+//                  Navigator.of(context).pop();
+//                },
+//              ),
+              ListTile(
+                leading: Icon(Icons.public, color: Colors.white,),
+                title: Text('Get Involved',style: TextStyle(fontSize: convW(16,context), color: Colors.white, )),
+                onTap: () {
+                  Navigator.of(context).pop();
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => GetInvolvedScreen()),
+                  );
                 },
               ),
               ListTile(
-                leading: Icon(Icons.info, color: Colors.white,),
-                title: Text('App Info',style: TextStyle(fontSize: 16, color: Colors.white, )),
+                leading: Icon(Icons.people, color: Colors.white,),
+                title: Text('Credits',style: TextStyle(fontSize: convW(16,context), color: Colors.white, )),
                 onTap: () {
                   Navigator.of(context).pop();
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => CreditsScreen()),
+                  );
+                },
+              ),
+//              ListTile(
+//                leading: Icon(Icons.security, color: Colors.white,),
+//                title: Text('Privacy Policy',style: TextStyle(fontSize: 16, color: Colors.white, )),
+//                onTap: () {
+//                  Navigator.of(context).pop();
+//                },
+//              ),
+              ListTile(
+                leading: Image(image: AssetImage('images/Discord-Logo-White.png'), width: convW(28,context),),
+                title: Text('Join Our Discord',style: TextStyle(fontSize: convW(16,context), color: Colors.white, )),
+                onTap: () {
+                  Navigator.of(context).pop();
+                  _launchURL('https://discord.gg/P28VVMQBja');
                 },
               ),
               ListTile(
                 leading: Icon(Icons.star, color: Colors.white,),
-                title: Text('Rate Us',style: TextStyle(fontSize: 16, color: Colors.white, )),
+                title: Text('Rate Us',style: TextStyle(fontSize: convW(16,context), color: Colors.white, )),
                 onTap: () {
                   Navigator.of(context).pop();
-                },
-              ),
-              ListTile(
-                leading: Icon(Icons.people, color: Colors.white,),
-                title: Text('Get Involved',style: TextStyle(fontSize: 16, color: Colors.white, )),
-                onTap: () {
-                  Navigator.of(context).pop();
-                },
-              ),
-              ListTile(
-                leading: Icon(Icons.people, color: Colors.white,),
-                title: Text('Credits',style: TextStyle(fontSize: 16, color: Colors.white, )),
-                onTap: () {
-                  Navigator.of(context).pop();
-                },
-              ),
-              ListTile(
-                leading: Icon(Icons.security, color: Colors.white,),
-                title: Text('Privacy Policy',style: TextStyle(fontSize: 16, color: Colors.white, )),
-                onTap: () {
-                  Navigator.of(context).pop();
-                },
-              ),
-              ListTile(
-                leading: Image(image: AssetImage('images/Discord-Logo-White.png'), width: 28,),
-                title: Text('Join Our Discord',style: TextStyle(fontSize: 16, color: Colors.white, )),
-                onTap: () {
-                  Navigator.of(context).pop();
+                  _launchURL('https://discord.gg/P28VVMQBja');
                 },
               ),
 

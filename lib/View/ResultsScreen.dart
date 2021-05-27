@@ -91,13 +91,13 @@ class _ResultsScreenState extends State<ResultsScreen> with TickerProviderStateM
 
     if (snapShot == null || !snapShot.exists) {
       return users.get().then((querySnapshot) {
-        batch.set(users.doc(globalUser.uid), {"name": globalUser.isAnonymous ? "Guest" : globalUser.displayName,"score": FieldValue.increment(getScoresResults()[0]), "matches": FieldValue.arrayUnion([widget.gameID])});
+        batch.set(users.doc(globalUser.uid), {"name": globalUser.isAnonymous ? "Guest" : globalUser.displayName,"score": FieldValue.increment(getScoresResults()[0]), "matches": FieldValue.arrayUnion([widget.gameID + " " + getScoresResults()[0].toString()])});
         batch.delete(userDoc.doc(globalUser.uid));
         return batch.commit();
       });
     } else {
       return users.get().then((querySnapshot) {
-        batch.update(users.doc(globalUser.uid), {"score": FieldValue.increment(getScoresResults()[0]), "matches": FieldValue.arrayUnion([widget.gameID])});
+        batch.update(users.doc(globalUser.uid), {"score": FieldValue.increment(getScoresResults()[0]), "matches": FieldValue.arrayUnion([widget.gameID + " " + getScoresResults()[0].toString()])});
         batch.delete(userDoc.doc(globalUser.uid));
         return batch.commit();
       });
@@ -120,7 +120,7 @@ class _ResultsScreenState extends State<ResultsScreen> with TickerProviderStateM
     return new Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: Text('Results',style: TextStyle(fontSize: 22, fontFamily: 'Lumos')),
+        title: Text('Results',style: TextStyle(fontSize: convW(22,context), fontFamily: 'Lumos')),
       ),
       body: Container(
         width: MediaQuery.of(context).size.width,
@@ -163,7 +163,7 @@ class _ResultsScreenState extends State<ResultsScreen> with TickerProviderStateM
                                 cardVisible = false;
                               });},
                             ),
-                            const SizedBox(width: 8),
+                            SizedBox(width: convW(8,context)),
                           ],
                         ),
                       ],
@@ -185,7 +185,7 @@ class _ResultsScreenState extends State<ResultsScreen> with TickerProviderStateM
                         'Scores',
                         overflow: TextOverflow.ellipsis,
                         textAlign: TextAlign.center,
-                        style: TextStyle(fontSize: 22.0, fontWeight: FontWeight.w500, color: Colors.white),
+                        style: TextStyle(fontSize: convW(22,context), fontWeight: FontWeight.w500, color: Colors.white),
                       ),
                     ),
                   ),
@@ -224,7 +224,7 @@ class _ResultsScreenState extends State<ResultsScreen> with TickerProviderStateM
                       child: Text(
                         ques[index]['question'],
 //                              overflow: TextOverflow.ellipsis,
-                        style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.w500, color: Colors.white),
+                        style: TextStyle(fontSize: convW(18,context), fontWeight: FontWeight.w500, color: Colors.white),
                       ),
                     ),
                   ),

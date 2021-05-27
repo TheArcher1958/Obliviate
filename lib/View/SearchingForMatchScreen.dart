@@ -90,6 +90,8 @@ class _SearchingScreenState extends State<SearchingScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
+              Text('Searching For Opponent', style: TextStyle(fontSize: convW(24,context)),),
+
               CircularProgressIndicator(
                 color: Colors.amber,
               ),

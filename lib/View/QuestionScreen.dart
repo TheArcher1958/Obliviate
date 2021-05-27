@@ -176,13 +176,13 @@ class _QuestionScreenState extends State<QuestionScreen> with TickerProviderStat
               children:
               [
                 LinearProgressIndicator(
-                  minHeight: 40,
+                  minHeight: convH(40,context),
                   color: Color(0xff6c59e6),
                   backgroundColor: Colors.black45,
                   value: controller.value,
                   semanticsLabel: 'Timer',
                 ),
-                SizedBox(height: 20,),
+                SizedBox(height: convH(20,context),),
                 AnimatedSwitcher(
                   duration: const Duration(milliseconds: 500),
                   transitionBuilder: (Widget child, Animation<double> animation) {
@@ -203,12 +203,12 @@ class _QuestionScreenState extends State<QuestionScreen> with TickerProviderStat
                       child: Padding(
                         padding: const EdgeInsets.all(16.0),
                         child: Text(ques[counter]['question'],
-                          style: TextStyle(color: Colors.white, fontSize: 22,),),
+                          style: TextStyle(color: Colors.white, fontSize: convW(22,context),),),
                       ),
                     ),
                   ),
                 ),
-                SizedBox(height: 50,),
+                SizedBox(height: convH(50,context),),
                 Column(
                   children: new List.generate(
                     ques[counter]['options'].length, (i) =>
@@ -243,7 +243,7 @@ class _QuestionScreenState extends State<QuestionScreen> with TickerProviderStat
                                   padding: const EdgeInsets.fromLTRB(
                                       8, 14, 8, 14),
                                   child: Text(ques[counter]['options'][i],
-                                    style: TextStyle(fontSize: 17),),
+                                    style: TextStyle(fontSize: convW(17,context)),),
                                 )
                             ),
                           ),

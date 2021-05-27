@@ -56,21 +56,21 @@ class _GamemodesScreenState extends State<GamemodesScreen> {
             child: Card(
               color: Color(0xff1a2a47),
               child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: const ListTile(
+                padding:  EdgeInsets.all(convW(8.0,context)),
+                child: ListTile(
 
                   leading: Icon(Icons.lightbulb, color: Colors.amber,),
-                  subtitle: Text('Multiplayer is the only mode right now, but more are coming soon!', style: TextStyle(color: Colors.white70,fontSize: 18)),
+                  subtitle: Text('Multiplayer is the only mode right now, but more are coming soon!', style: TextStyle(color: Colors.white70,fontSize: convW(18,context))),
                 ),
               ),
             ),
           ),
 
-          SizedBox(height: 80,),
+          SizedBox(height: convH(80,context),),
 
           SizedBox(
-            width: 200,
-            height: 70,
+            width: convW(200,context),
+            height: convH(70,context),
             child: ElevatedButton(
               style: ButtonStyle(elevation: MaterialStateProperty.all<double>(10.0),
                   backgroundColor: MaterialStateProperty.all<
@@ -84,11 +84,11 @@ class _GamemodesScreenState extends State<GamemodesScreen> {
                   MaterialPageRoute(builder: (context) => SearchingScreen()),
                 );
               },
-              child: Text('Multiplayer', style: TextStyle(fontSize: 24,fontWeight: FontWeight.bold),),
+              child: Text('Multiplayer', style: TextStyle(fontSize: convW(24,context),fontWeight: FontWeight.bold),),
             ),
           ),
 
-          SizedBox(height: 60,),
+          SizedBox(height: convH(60,context),),
 
         ],
       ),

@@ -31,4 +31,16 @@ Map<int, Color> color2 = {
 MaterialColor mild_blue = MaterialColor(0xff243b55, color);
 MaterialColor darker_blue = MaterialColor(0xff141e30, color2);
 
+double good_width = 392.7;
+double good_height = 807.2;
+
+double convW(before, context) {
+  double modifier = before / good_width;
+  return MediaQuery.of(context).size.width * modifier;
+}
+double convH(before, context) {
+  double modifier = before / good_height;
+  return MediaQuery.of(context).size.height * modifier;
+}
+
 

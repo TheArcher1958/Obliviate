@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
+import '../globals.dart';
+
 class LeaderBoardsScreen extends StatefulWidget {
   @override
   _LeaderBoardsScreenState createState() => _LeaderBoardsScreenState();
@@ -81,7 +83,7 @@ class _LeaderBoardsScreenState extends State<LeaderBoardsScreen> {
                   label: Text("#", style: TextStyle(
                     fontWeight: FontWeight.w600,
                     color: Colors.white,
-                    fontSize: 16,
+                    fontSize: convW(16,context),
                   ),),
                   numeric: true,
                 ),
@@ -89,7 +91,7 @@ class _LeaderBoardsScreenState extends State<LeaderBoardsScreen> {
                   label: Text("User", style: TextStyle(
                     fontWeight: FontWeight.w600,
                     color: Colors.white,
-                    fontSize: 16,
+                    fontSize: convW(16,context),
                   ),),
                   numeric: false,
                 ),
@@ -97,7 +99,7 @@ class _LeaderBoardsScreenState extends State<LeaderBoardsScreen> {
                   label: Text("Score", style: TextStyle(
                     fontWeight: FontWeight.w600,
                     color: Colors.white,
-                    fontSize: 16,
+                    fontSize: convW(16,context),
                   ),),
                   numeric: true,
                 ),
@@ -106,13 +108,13 @@ class _LeaderBoardsScreenState extends State<LeaderBoardsScreen> {
                   (index) => DataRow(
                   cells: [
                     DataCell(
-                      Text("${index + 1}", style: TextStyle(fontSize: 16, color: Colors.white,),),
+                      Text("${index + 1}", style: TextStyle(fontSize: convW(16,context), color: Colors.white,),),
                     ),
                     DataCell(
-                      Text(topUsers[index]['name'], style: TextStyle(color: Colors.white, fontSize: 16,)),
+                      Text(topUsers[index]['name'], style: TextStyle(color: Colors.white, fontSize: convW(16,context),)),
                     ),
                     DataCell(
-                      Text(topUsers[index]['score'].toString(), style: TextStyle(fontSize: 16,color: Colors.white,),),
+                      Text(topUsers[index]['score'].toString(), style: TextStyle(fontSize: convW(16,context),color: Colors.white,),),
                     ),
                   ]),
             ).toList(),

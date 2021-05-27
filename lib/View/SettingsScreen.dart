@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../globals.dart';
+
 class SettingsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -14,7 +16,7 @@ class SettingsScreen extends StatelessWidget {
         )
       ),
       child: Center(
-        child: Text('Coming Soon', style: TextStyle(fontSize: 25, color: Colors.white, fontFamily: 'Lumos'),),
+        child: Text('Coming Soon', style: TextStyle(fontSize: convW(25,context), color: Colors.white, fontFamily: 'Lumos'),),
       ),
     );
   }
