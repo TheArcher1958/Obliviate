@@ -1,5 +1,5 @@
 name: hp_multiplayer_trivia
-description: A Harry Potter 1v1 trivia game. 
+description: A Harry Potter 1v1 trivia game.
 
 # The following line prevents the package from being accidentally published to
 # pub.dev using `pub publish`. This is preferred for private packages.
@@ -31,8 +31,12 @@ dependencies:
   simple_animations: ^3.0.3
   flutter_slidable: ^0.6.0
   url_launcher: ^6.0.3
+  google_mobile_ads: ^0.13.0
+  firebase_remote_config: ^0.10.0+2
+  package_info: ^0.4.0+16
+  version: ^2.0.0
 
-
+#ca-app-pub-8051689433613172/5139080146
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.0

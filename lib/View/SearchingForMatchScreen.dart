@@ -9,7 +9,7 @@ class SearchingScreen extends StatefulWidget {
   _SearchingScreenState createState() => _SearchingScreenState();
 }
 
-class _SearchingScreenState extends State<SearchingScreen> {
+class _SearchingScreenState extends State<SearchingScreen> with WidgetsBindingObserver {
 
 //  void initState() {
 //    super.initState();
@@ -31,75 +31,95 @@ class _SearchingScreenState extends State<SearchingScreen> {
     }).catchError((error) => print('Unable to delete document.'));
   }
 
+  @override
+  void initState() {
+    WidgetsBinding.instance.addObserver(this);
+    super.initState();
+  }
+
 
   @override
   void dispose() {
+    cancelMatchmaking();
+    WidgetsBinding.instance.removeObserver(this);
     super.dispose();
 
+  }
+
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    print('State change detected! 🔨');
+    print(state);
+    if(state == AppLifecycleState.paused) {
+      cancelMatchmaking();
+    }
   }
 
   @override
   Widget build(BuildContext context) {
 
 
-    return StreamBuilder(
-      stream: FirebaseFirestore.instance.collection('matchmaking').doc(globalUser.uid).snapshots(),
-      builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
-        if (snapshot.hasData && snapshot.data.exists) {
-          var userDocument = snapshot.data;
-          //print(userDocument.data().containsKey('gameID'));
+    return Scaffold(
+      body: StreamBuilder(
+        stream: FirebaseFirestore.instance.collection('matchmaking').doc(globalUser.uid).snapshots(),
+        builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+          if (snapshot.hasData && snapshot.data.exists) {
+            var userDocument = snapshot.data;
+            //print(userDocument.data().containsKey('gameID'));
+            print(userDocument);
+            if(userDocument['gameID'] != 'none') {
+              print('Not none!');
+              print('Document data: $userDocument');
+              WidgetsBinding.instance.addPostFrameCallback((_){
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => QuestionScreen(userDocument['gameID'])),
+                );
+              });
 
-          if(userDocument['gameID'] != 'none') {
-            print('Not none!');
-            print('Document data: $userDocument');
-            WidgetsBinding.instance.addPostFrameCallback((_){
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (context) => QuestionScreen(userDocument['gameID'])),
-              );
-            });
-
-            return Container(
-              width: MediaQuery.of(context).size.width,
-              height: MediaQuery.of(context).size.height,
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [Color(0xff141e30), Color(0xff243b55)]
+              return Container(
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [Color(0xff141e30), Color(0xff243b55)]
+                  ),
                 ),
-              ),
-            );
+              );
+            }
           }
-        }
-        return Container(
-          width: MediaQuery
-              .of(context)
-              .size
-              .width,
-          height: MediaQuery
-              .of(context)
-              .size
-              .height,
-          decoration: BoxDecoration(
-              gradient: LinearGradient(
-                  begin: Alignment.topRight,
-                  end: Alignment.bottomLeft,
-                  colors: [Color(0xff141e30), Color(0xff243b55)])
-          ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              Text('Searching For Opponent', style: TextStyle(fontSize: convW(24,context)),),
+          return Container(
+            width: MediaQuery
+                .of(context)
+                .size
+                .width,
+            height: MediaQuery
+                .of(context)
+                .size
+                .height,
+            decoration: BoxDecoration(
+                gradient: LinearGradient(
+                    begin: Alignment.topRight,
+                    end: Alignment.bottomLeft,
+                    colors: [Color(0xff141e30), Color(0xff243b55)])
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Text('Searching For Opponent', style: TextStyle(fontSize: convW(24,context), color: Colors.white),),
 
-              CircularProgressIndicator(
-                color: Colors.amber,
-              ),
-              ElevatedButton(onPressed: cancelMatchmaking, child: Text('Cancel'))
-            ],
-          ),
-        );
-      }
+                CircularProgressIndicator(
+                  color: Colors.amber,
+                ),
+                ElevatedButton(onPressed: cancelMatchmaking, child: Text('Cancel'))
+              ],
+            ),
+          );
+        }
+      ),
     );
   }
 }

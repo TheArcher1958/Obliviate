@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -11,9 +12,30 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
 
-  bool _hidePasswordText = true;
-  var _userController = TextEditingController();
-  var _passController = TextEditingController();
+
+
+  CollectionReference users = FirebaseFirestore.instance.collection('users');
+
+  Future<void> addUser(uid) async {
+
+    final snapShot = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .get();
+    // Call the user's CollectionReference to add a new user
+    if (snapShot == null || !snapShot.exists) {
+      return users
+          .add({
+        "name": globalUser.isAnonymous ? "Guest" : globalUser.displayName,
+        "score": 0,
+        "matches": []
+      })
+          .then((value) => print("User Added"))
+          .catchError((error) => print("Failed to add user: $error"));
+    }
+  }
+
+
 
   @override
   void initState() {
@@ -25,6 +47,8 @@ class _LoginScreenState extends State<LoginScreen> {
       if (user == null) {
 //        print('User is currently signed out!');
       } else {
+        addUser(FirebaseAuth.instance.currentUser.uid);
+
         //print('User is signed in!');
         Navigator.pushReplacementNamed(context, "/");
       }
@@ -32,11 +56,11 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
 
-  void _toggleVisibility() {
-    setState(() {
-      _hidePasswordText = !_hidePasswordText;
-    });
-  }
+//  void _toggleVisibility() {
+//    setState(() {
+//      _hidePasswordText = !_hidePasswordText;
+//    });
+//  }
 
 
   Future<UserCredential> signInWithGoogle() async {
@@ -102,64 +126,64 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
                 ),
-                SizedBox(
-                  height: convH(30,context),
-                ),
-                Container(
-                  width: convW(300,context),
-                  child: TextField(
-                    controller: _userController,
-                    cursorColor: Colors.amber,
-                    decoration: InputDecoration(
-                      labelStyle: TextStyle(
-                        color: Colors.white,
-                      ),
-                      enabledBorder: const OutlineInputBorder(
-                        borderSide: const BorderSide(color: Colors.white70, width: 2.0),
-                      ),
-                      focusedBorder: const OutlineInputBorder(
-                        borderSide: const BorderSide(color: Colors.amber, width: 2.0),
-                      ),
-//                      border: OutlineInputBorder(borderSide: new BorderSide(color: Colors.teal)),
-                      labelText: 'Username',
-                    ),
-                    style: TextStyle(
-                      fontFamily: "Roberto",
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-                SizedBox(
-                  height: convH(30,context),
-                ),
-                Container(
-                  width: convW(300,context),
-                  child: TextField(
-                    cursorColor: Colors.amber,
-                    controller: _passController,
-                    obscureText: _hidePasswordText,
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontFamily: "Roberto",
-                    ),
-                    decoration: InputDecoration(
-                      labelStyle: TextStyle(
-                        color: Colors.white,
-                      ),
-                      enabledBorder: const OutlineInputBorder(
-                        borderSide: const BorderSide(color: Colors.white70, width: 2.0),
-                      ),
-                      focusedBorder: const OutlineInputBorder(
-                        borderSide: const BorderSide(color: Colors.amber, width: 2.0),
-                      ),
-                      labelText: 'Password',
-                      suffixIcon: IconButton(
-                        onPressed: () => _toggleVisibility(),
-                        icon: Icon(_hidePasswordText ? Icons.visibility : Icons.visibility_off, color: _hidePasswordText ? Colors.white : Colors.amber,),
-                      ),
-                    ),
-                  ),
-                ),
+//                SizedBox(
+//                  height: convH(30,context),
+//                ),
+//                Container(
+//                  width: convW(300,context),
+//                  child: TextField(
+//                    controller: _userController,
+//                    cursorColor: Colors.amber,
+//                    decoration: InputDecoration(
+//                      labelStyle: TextStyle(
+//                        color: Colors.white,
+//                      ),
+//                      enabledBorder: const OutlineInputBorder(
+//                        borderSide: const BorderSide(color: Colors.white70, width: 2.0),
+//                      ),
+//                      focusedBorder: const OutlineInputBorder(
+//                        borderSide: const BorderSide(color: Colors.amber, width: 2.0),
+//                      ),
+////                      border: OutlineInputBorder(borderSide: new BorderSide(color: Colors.teal)),
+//                      labelText: 'Username',
+//                    ),
+//                    style: TextStyle(
+//                      fontFamily: "Roberto",
+//                      color: Colors.white,
+//                    ),
+//                  ),
+//                ),
+//                SizedBox(
+//                  height: convH(30,context),
+//                ),
+//                Container(
+//                  width: convW(300,context),
+//                  child: TextField(
+//                    cursorColor: Colors.amber,
+//                    controller: _passController,
+//                    obscureText: _hidePasswordText,
+//                    style: TextStyle(
+//                      color: Colors.white,
+//                      fontFamily: "Roberto",
+//                    ),
+//                    decoration: InputDecoration(
+//                      labelStyle: TextStyle(
+//                        color: Colors.white,
+//                      ),
+//                      enabledBorder: const OutlineInputBorder(
+//                        borderSide: const BorderSide(color: Colors.white70, width: 2.0),
+//                      ),
+//                      focusedBorder: const OutlineInputBorder(
+//                        borderSide: const BorderSide(color: Colors.amber, width: 2.0),
+//                      ),
+//                      labelText: 'Password',
+//                      suffixIcon: IconButton(
+//                        onPressed: () => _toggleVisibility(),
+//                        icon: Icon(_hidePasswordText ? Icons.visibility : Icons.visibility_off, color: _hidePasswordText ? Colors.white : Colors.amber,),
+//                      ),
+//                    ),
+//                  ),
+//                ),
 
 //          FlatButton(
 //            onPressed: () {},
@@ -170,35 +194,35 @@ class _LoginScreenState extends State<LoginScreen> {
 //              ),
 //            ),
 //          ),
-                SizedBox(
-                  height: convH(20,context),
-                ),
-                Container(
-                  decoration: BoxDecoration(
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.6),
-                        offset: Offset(0.0, 2.0),
-                        blurRadius: 3.0,
-                        spreadRadius: 3.0,
-                      )
-                    ],
-                  ),
-                  child: SizedBox(
-                    height: convH(50,context),
-                    width: convW(250,context),
-                    child: ElevatedButton(
-                      child: Text('Login', style: TextStyle(fontSize: convW(25,context), color: Colors.white)),
-                      style: ButtonStyle(elevation: MaterialStateProperty.all<double>(10.0),
-                        backgroundColor: MaterialStateProperty.all<
-                            Color>(Color(0xff6c59e6)),
-
-                      ),
-                      onPressed: () {
-                      },
-                    ),
-                  ),
-                ),
+//                SizedBox(
+//                  height: convH(20,context),
+//                ),
+//                Container(
+//                  decoration: BoxDecoration(
+//                    boxShadow: [
+//                      BoxShadow(
+//                        color: Colors.black.withOpacity(0.6),
+//                        offset: Offset(0.0, 2.0),
+//                        blurRadius: 3.0,
+//                        spreadRadius: 3.0,
+//                      )
+//                    ],
+//                  ),
+//                  child: SizedBox(
+//                    height: convH(50,context),
+//                    width: convW(250,context),
+//                    child: ElevatedButton(
+//                      child: Text('Login', style: TextStyle(fontSize: convW(25,context), color: Colors.white)),
+//                      style: ButtonStyle(elevation: MaterialStateProperty.all<double>(10.0),
+//                        backgroundColor: MaterialStateProperty.all<
+//                            Color>(Color(0xff6c59e6)),
+//
+//                      ),
+//                      onPressed: () {
+//                      },
+//                    ),
+//                  ),
+//                ),
                 SizedBox(
                   height: convH(25,context),
                 ),
@@ -224,10 +248,6 @@ class _LoginScreenState extends State<LoginScreen> {
                 SizedBox(
                   height: convH(25,context),
                 ),
-                ElevatedButton(onPressed: signInAnonymously, child: Text('Continue as Guest')),
-                SizedBox(
-                  height: convH(25,context),
-                ),
                 Container(
                   decoration: BoxDecoration(
                     boxShadow: [
@@ -240,21 +260,50 @@ class _LoginScreenState extends State<LoginScreen> {
                     ],
                   ),
                   child: SizedBox(
-                    height: convH(45,context),
-                    width: convW(200,context),
+                    height: convH(50,context),
+                    width: convW(250,context),
                     child: ElevatedButton(
-                      child: Text('Register', style: TextStyle(fontSize: convW(25,context), color: Colors.white)),
-//                    textColor: Colors.white,
+                      child: Text('Continue as Guest', style: TextStyle(fontSize: convW(25,context), color: Colors.white)),
                       style: ButtonStyle(elevation: MaterialStateProperty.all<double>(10.0),
                         backgroundColor: MaterialStateProperty.all<
                             Color>(Color(0xff6c59e6)),
+
                       ),
-                      onPressed: () {
-                        Navigator.pushReplacementNamed(context, "/register");
-                      },
+                      onPressed: signInAnonymously,
                     ),
                   ),
-                )
+                ),
+//                ElevatedButton(onPressed: signInAnonymously, child: Text('Continue as Guest')),
+                SizedBox(
+                  height: convH(25,context),
+                ),
+//                Container(
+//                  decoration: BoxDecoration(
+//                    boxShadow: [
+//                      BoxShadow(
+//                        color: Colors.black.withOpacity(0.6),
+//                        offset: Offset(0.0, 2.0),
+//                        blurRadius: 3.0,
+//                        spreadRadius: 3.0,
+//                      )
+//                    ],
+//                  ),
+//                  child: SizedBox(
+//                    height: convH(45,context),
+//                    width: convW(200,context),
+//                    child: ElevatedButton(
+//                      child: Text('Register', style: TextStyle(fontSize: convW(25,context), color: Colors.white)),
+////                    textColor: Colors.white,
+//                      style: ButtonStyle(elevation: MaterialStateProperty.all<double>(10.0),
+//                        backgroundColor: MaterialStateProperty.all<
+//                            Color>(Color(0xff6c59e6)),
+//                      ),
+//                      onPressed: () {
+//                        Navigator.pushReplacementNamed(context, "/register");
+//                      },
+//                    ),
+//                  ),
+//                )
               ],
             ),
 

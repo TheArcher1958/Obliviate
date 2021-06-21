@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:hp_multiplayer_trivia/View/CreditsScreen.dart';
 import 'package:hp_multiplayer_trivia/View/GamemodesScreen.dart';
 import 'package:hp_multiplayer_trivia/View/GetInvolvedScreen.dart';
@@ -10,10 +11,13 @@ import '../globals.dart';
 import 'LoadingScreen.dart';
 import 'SettingsScreen.dart';
 
+import 'package:google_mobile_ads/google_mobile_ads.dart';
+
 class HomeScreen extends StatefulWidget {
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }
+
 
 class _HomeScreenState extends State<HomeScreen> {
   int tabIndex = 1;
@@ -21,6 +25,11 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void _launchURL(_url) async =>
       await canLaunch(_url) ? await launch(_url) : throw 'Could not launch $_url';
+
+  Future<InitializationStatus> _initGoogleMobileAds() {
+    // TODO: Initialize Google Mobile Ads SDK
+    return MobileAds.instance.initialize();
+  }
 
   @override
   void initState() {
@@ -113,7 +122,11 @@ class _HomeScreenState extends State<HomeScreen> {
                 title: Text('Sign Out',style: TextStyle(fontSize: convW(16,context), color: Colors.white, )),
                 onTap: () {
                   Navigator.of(context).pop();
-                  FirebaseAuth.instance.signOut();
+                  if(globalUser.isAnonymous) {
+                    FirebaseAuth.instance.signOut();
+                  } else {
+                    GoogleSignIn().signOut();
+                  }
                   Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(builder: (context) => LoadingScreen()),

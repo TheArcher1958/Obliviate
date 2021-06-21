@@ -2,6 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:hp_multiplayer_trivia/View/ResultsScreen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../globals.dart';
+import 'HomeScreen.dart';
+import 'ad_helper.dart';
+
+import 'package:google_mobile_ads/google_mobile_ads.dart';
+
 
 
 class QuestionScreen extends StatefulWidget {
@@ -11,7 +16,7 @@ class QuestionScreen extends StatefulWidget {
   _QuestionScreenState createState() => _QuestionScreenState();
 }
 
-class _QuestionScreenState extends State<QuestionScreen> with TickerProviderStateMixin {
+class _QuestionScreenState extends State<QuestionScreen> with TickerProviderStateMixin, WidgetsBindingObserver {
   var counter = 0;
   var iAnswered = false;
   var buttonsLocked = false;
@@ -24,8 +29,15 @@ class _QuestionScreenState extends State<QuestionScreen> with TickerProviderStat
   DocumentReference gameStream;
   var buttonColors = [Colors.black26,Colors.black26,Colors.black26,Colors.black26];
 
+  InterstitialAd _interstitialAd;
+
+  bool _isInterstitialAdReady = false;
+
   @override
   void initState() {
+    print("Made it to questions");
+    WidgetsBinding.instance.addObserver(this);
+
     _controller = AnimationController(vsync: this, duration: Duration(seconds: 1));
     animation = Tween(
         begin: 0.0,
@@ -44,6 +56,8 @@ class _QuestionScreenState extends State<QuestionScreen> with TickerProviderStat
     });
     gameStream = FirebaseFirestore.instance.collection('games').doc(widget.gameID);
     gameStream.snapshots().listen((querySnapshot) {
+      print("Inside Stream");
+
       if (querySnapshot.exists) {
         var playerIDs = querySnapshot.data()['playersIds'];
 
@@ -59,6 +73,9 @@ class _QuestionScreenState extends State<QuestionScreen> with TickerProviderStat
           setState(() {
             ques = querySnapshot.data()['questions'];
           });
+          if (!_isInterstitialAdReady) {
+            _loadInterstitialAd();
+          }
         }
       } else {
         // TODO: Game doesn't exist so show a modal and push away.
@@ -68,10 +85,47 @@ class _QuestionScreenState extends State<QuestionScreen> with TickerProviderStat
     super.initState();
   }
 
+  void _loadInterstitialAd() {
+    InterstitialAd.load(
+      adUnitId: AdHelper.interstitialAdUnitId,
+      request: AdRequest(),
+      adLoadCallback: InterstitialAdLoadCallback(
+        onAdLoaded: (ad) {
+          this._interstitialAd = ad;
+
+          ad.fullScreenContentCallback = FullScreenContentCallback(
+            onAdDismissedFullScreenContent: (ad) {
+//              _moveToHome();
+              if(counter >= ques.length) {
+                WidgetsBinding.instance.addPostFrameCallback((_) =>
+                {
+                  Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (context) =>
+                          ResultsScreen(myAnswers, opponentAnswers, ques, widget
+                              .gameID)))
+                });
+              }
+            },
+          );
+
+          _isInterstitialAdReady = true;
+        },
+        onAdFailedToLoad: (err) {
+          print('Failed to load an interstitial ad: ${err.message}');
+          _isInterstitialAdReady = false;
+        },
+      ),
+    );
+  }
+
 
   void ensureOpponentAnswered() {
+    print("Inside ensure");
+
     if(opponentAnswers != null) {
-      if (opponentAnswers.length == counter + 1 &&
+      print(opponentAnswers.length.toString() + " " + ques.length.toString());
+      if ((opponentAnswers.length == counter + 1 || opponentAnswers.length == ques.length) &&
           myAnswers.length == counter + 1 && iAnswered == false) {
         iAnswered = true;
         Future.delayed(Duration(seconds: 1), () {
@@ -105,6 +159,8 @@ class _QuestionScreenState extends State<QuestionScreen> with TickerProviderStat
       }
     }
     myAnswers.add(i);
+    print("Right before answer update");
+
     gameStream.update({'answers.' + globalUser.uid: myAnswers})
         .then((value) => ensureOpponentAnswered())
         .catchError((error) => print("Failed to update user: $error"));
@@ -113,9 +169,34 @@ class _QuestionScreenState extends State<QuestionScreen> with TickerProviderStat
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _controller.dispose();
+    _interstitialAd?.dispose();
     controller.dispose();
     super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+      print('State change detected! 🔨');
+      print(state);
+      if(state == AppLifecycleState.paused) {
+        while(myAnswers.length < ques.length) {
+          myAnswers.add(-1);
+        }
+        print(myAnswers);
+        gameStream.update({'answers.' + globalUser.uid: myAnswers})
+            .then((value) => ensureOpponentAnswered())
+            .catchError((error) => print("Failed to update user: $error"));
+        CollectionReference userDoc = FirebaseFirestore.instance.collection('matchmaking');
+        userDoc
+            .doc(globalUser.uid)
+            .delete()
+            .then((value) => {
+              Navigator.pop(context),
+          print('Canceled')
+        }).catchError((error) => print('Unable to delete document.'));
+      }
   }
 
   @override
@@ -136,9 +217,15 @@ class _QuestionScreenState extends State<QuestionScreen> with TickerProviderStat
     } else {
       if(counter >= ques.length) {
         WidgetsBinding.instance.addPostFrameCallback((_) => {
-          Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) => ResultsScreen(myAnswers, opponentAnswers, ques, widget.gameID)))
+          if (_isInterstitialAdReady) {
+              _interstitialAd?.show()
+          } else {
+              Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => ResultsScreen(myAnswers, opponentAnswers, ques, widget.gameID)))
+          }
+
+
         });
 
         return Container(
@@ -226,7 +313,7 @@ class _QuestionScreenState extends State<QuestionScreen> with TickerProviderStat
                               .size
                               .width,
                           child: AnimatedContainer(
-                            color: buttonColors[i],
+                            color: buttonColors[i ],
                             duration: Duration(milliseconds: 300),
                             child: ElevatedButton(style: ButtonStyle(
                                 backgroundColor: MaterialStateProperty.all<

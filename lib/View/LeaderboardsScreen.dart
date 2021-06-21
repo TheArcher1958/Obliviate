@@ -1,6 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
+import 'package:google_mobile_ads/google_mobile_ads.dart';
+
+
 import '../globals.dart';
 
 class LeaderBoardsScreen extends StatefulWidget {
@@ -14,7 +17,7 @@ class _LeaderBoardsScreenState extends State<LeaderBoardsScreen> {
   void getTopPlayers() {
     FirebaseFirestore.instance
         .collection('users')
-        .orderBy('score')
+        .orderBy('score', descending: true)
         .limit(25)
         .get()
         .then((data) {

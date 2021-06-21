@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'dart:convert';
 
+
 import '../globals.dart';
 
 class ResultsScreen extends StatefulWidget {
@@ -21,6 +22,7 @@ class _ResultsScreenState extends State<ResultsScreen> with TickerProviderStateM
   var myAnswers;
   var opponentAnswers;
   var ques;
+
 
   Color getColorOfAnswer(text, i) {
     if(text == ques[i]['answer']) return Colors.green;
@@ -112,8 +114,12 @@ class _ResultsScreenState extends State<ResultsScreen> with TickerProviderStateM
       ques = widget.ques;
 
       batchCleanUp();
+
+
       super.initState();
     }
+
+
 
   @override
   Widget build(BuildContext context) {
