@@ -26,6 +26,8 @@ class _QuestionScreenState extends State<QuestionScreen> with TickerProviderStat
   var _controller;
   var controller;
   var animation;
+  var ignoreOpponentSnapshots = false;
+  var waitingState = false;
   DocumentReference gameStream;
   var buttonColors = [Colors.black26,Colors.black26,Colors.black26,Colors.black26];
 
@@ -49,9 +51,43 @@ class _QuestionScreenState extends State<QuestionScreen> with TickerProviderStat
       vsync: this,
       duration: const Duration(seconds: 17),
     )..addListener(() {
-      setState(() {});
+
       if (controller.value == 1.0 && buttonsLocked == false) {
         switchQuestion(null, -1);
+        setState(() {
+          waitingState = true;
+        });
+
+
+
+      } else if(controller.value == 1.0 && buttonsLocked == true) {
+        print('button');
+        setState(() {
+          waitingState = true;
+        });
+        var beforeOpponentsAnswers = opponentAnswers;
+        Future.delayed(Duration(seconds: 8), () {
+          print('after 8');
+          if(beforeOpponentsAnswers == opponentAnswers) {
+            while(opponentAnswers.length < ques.length) {
+              opponentAnswers.add(-1);
+            }
+            ignoreOpponentSnapshots = true;
+            print('ensured');
+            ensureOpponentAnswered();
+          }
+        });
+//        Future.delayed(const Duration(seconds: 8), () => () {
+//          print('after 8');
+//          if(beforeOpponentsAnswers == opponentAnswers) {
+//            while(opponentAnswers.length < ques.length) {
+//              opponentAnswers.add(-1);
+//            }
+//            ignoreOpponentSnapshots = true;
+//            print('ensured');
+//            ensureOpponentAnswered();
+//          }
+//        });
       }
     });
     gameStream = FirebaseFirestore.instance.collection('games').doc(widget.gameID);
@@ -66,7 +102,9 @@ class _QuestionScreenState extends State<QuestionScreen> with TickerProviderStat
             : playerIDs[0];
 
         // TODO: optimize this better in the future?
-        opponentAnswers = (querySnapshot.data()['answers'][opponentsID]);
+        if(ignoreOpponentSnapshots == false) {
+          opponentAnswers = (querySnapshot.data()['answers'][opponentsID]);
+        }
 
         ensureOpponentAnswered();
         if (ques.length == 0 || ques.isEmpty) {
@@ -131,6 +169,7 @@ class _QuestionScreenState extends State<QuestionScreen> with TickerProviderStat
         Future.delayed(Duration(seconds: 1), () {
           _controller.value = 0.0;
           setState(() {
+            waitingState = false;
             counter += 1;
             iAnswered = false;
             buttonsLocked = false;
@@ -166,6 +205,16 @@ class _QuestionScreenState extends State<QuestionScreen> with TickerProviderStat
         .catchError((error) => print("Failed to update user: $error"));
   }
 
+  IconData getOpponentIcon() {
+    if(opponentAnswers.length == counter + 1 || opponentAnswers.length == ques.length) return Icons.check;
+    else return Icons.clear;
+  }
+
+  Color getOpponentColor() {
+    if(opponentAnswers.length == counter + 1 || opponentAnswers.length == ques.length) return Colors.green;
+    else return Colors.red;
+  }
+
 
   @override
   void dispose() {
@@ -180,7 +229,7 @@ class _QuestionScreenState extends State<QuestionScreen> with TickerProviderStat
   void didChangeAppLifecycleState(AppLifecycleState state) {
       print('State change detected! 🔨');
       print(state);
-      if(state == AppLifecycleState.paused) {
+      if(state == AppLifecycleState.paused && myAnswers.length < ques.length) {
         while(myAnswers.length < ques.length) {
           myAnswers.add(-1);
         }
@@ -196,12 +245,41 @@ class _QuestionScreenState extends State<QuestionScreen> with TickerProviderStat
               Navigator.pop(context),
           print('Canceled')
         }).catchError((error) => print('Unable to delete document.'));
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => HomeScreen()),
+        );
       }
   }
 
   @override
   Widget build(BuildContext context) {
-
+    if(waitingState == true) {
+      return Container(
+        width: MediaQuery
+            .of(context)
+            .size
+            .width,
+        height: MediaQuery
+            .of(context)
+            .size
+            .height,
+        decoration: BoxDecoration(
+            gradient: LinearGradient(
+                begin: Alignment.topRight,
+                end: Alignment.bottomLeft,
+                colors: [Color(0xff141e30), Color(0xff243b55)])
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            CircularProgressIndicator(
+              color: Colors.amber,
+            ),
+          ],
+        ),
+      );
+    }
     if(ques.length == 0 || ques.isEmpty) {
       return Container(
         width: MediaQuery.of(context).size.width,
@@ -224,8 +302,6 @@ class _QuestionScreenState extends State<QuestionScreen> with TickerProviderStat
                   context,
                   MaterialPageRoute(builder: (context) => ResultsScreen(myAnswers, opponentAnswers, ques, widget.gameID)))
           }
-
-
         });
 
         return Container(
@@ -242,104 +318,116 @@ class _QuestionScreenState extends State<QuestionScreen> with TickerProviderStat
       }
       _controller.forward();
       controller.forward();
-      return Scaffold(
-        body: SingleChildScrollView(
-          child: Container(
-            width: MediaQuery
-                .of(context)
-                .size
-                .width,
-            height: MediaQuery
-                .of(context)
-                .size
-                .height,
-            decoration: BoxDecoration(
-                gradient: LinearGradient(
-                    begin: Alignment.topRight,
-                    end: Alignment.bottomLeft,
-                    colors: [Color(0xff141e30), Color(0xff243b55)])
-            ),
-            child: Column(
-              children:
-              [
-                LinearProgressIndicator(
-                  minHeight: convH(40,context),
-                  color: Color(0xff6c59e6),
-                  backgroundColor: Colors.black45,
-                  value: controller.value,
-                  semanticsLabel: 'Timer',
-                ),
-                SizedBox(height: convH(20,context),),
-                AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 500),
-                  transitionBuilder: (Widget child, Animation<double> animation) {
-                    return ScaleTransition(child: child, scale: animation);
-                  },
-                  child: Padding(
-                    key: ValueKey<int>(counter),
-                    padding: const EdgeInsets.all(14.0),
-                    child: Container(
-                      width: MediaQuery
-                          .of(context)
-                          .size
-                          .width,
-                      decoration: BoxDecoration(
-                          color: Colors.black45,
-                          borderRadius: BorderRadius.all(Radius.circular(20))
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Text(ques[counter]['question'],
-                          style: TextStyle(color: Colors.white, fontSize: convW(22,context),),),
+      return WillPopScope(
+        onWillPop: () async => false,
+        child: Scaffold(
+          body: SingleChildScrollView(
+            child: Container(
+              width: MediaQuery
+                  .of(context)
+                  .size
+                  .width,
+              height: MediaQuery
+                  .of(context)
+                  .size
+                  .height,
+              decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                      begin: Alignment.topRight,
+                      end: Alignment.bottomLeft,
+                      colors: [Color(0xff141e30), Color(0xff243b55)])
+              ),
+              child: Column(
+                children:
+                [
+                  LinearProgressIndicator(
+                    minHeight: convH(40,context),
+                    color: Color(0xff6c59e6),
+                    backgroundColor: Colors.black45,
+                    value: controller.value,
+                    semanticsLabel: 'Timer',
+                  ),
+                  SizedBox(height: convH(8,context),),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text('Opponent: John', style: TextStyle(color: Colors.white, fontSize: convW(16,context)),),
+                      SizedBox(width: convW(5,context),),
+                      Icon(getOpponentIcon(), color: getOpponentColor(),)
+                    ],
+                  ),
+                  SizedBox(height: convH(8,context),),
+                  AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 500),
+                    transitionBuilder: (Widget child, Animation<double> animation) {
+                      return ScaleTransition(child: child, scale: animation);
+                    },
+                    child: Padding(
+                      key: ValueKey<int>(counter),
+                      padding: const EdgeInsets.all(14.0),
+                      child: Container(
+                        width: MediaQuery
+                            .of(context)
+                            .size
+                            .width,
+                        decoration: BoxDecoration(
+                            color: Colors.black45,
+                            borderRadius: BorderRadius.all(Radius.circular(20))
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Text(ques[counter]['question'],
+                            style: TextStyle(color: Colors.white, fontSize: convW(22,context),),),
+                        ),
                       ),
                     ),
                   ),
-                ),
-                SizedBox(height: convH(50,context),),
-                Column(
-                  children: new List.generate(
-                    ques[counter]['options'].length, (i) =>
-                    AnimatedSwitcher(
-                      duration: const Duration(milliseconds: 500),
-                      transitionBuilder: (Widget child,
-                          Animation<double> animation) {
-                        return ScaleTransition(child: child, scale: animation);
-                      },
-                      child: Padding(key: ValueKey<int>(counter),
-                        padding: const EdgeInsets.all(14.0),
-                        child: SizedBox(
-                          width: MediaQuery
-                              .of(context)
-                              .size
-                              .width,
-                          child: AnimatedContainer(
-                            color: buttonColors[i ],
-                            duration: Duration(milliseconds: 300),
-                            child: ElevatedButton(style: ButtonStyle(
-                                backgroundColor: MaterialStateProperty.all<
-                                    Color>(Colors.transparent)),
-                                onPressed: () {
-                                  if (!buttonsLocked) {
-                                    switchQuestion(
-                                        ques[counter]['options'][i], i);
-                                  } else {
-                                    return null;
-                                  }
-                                },
-                                child: Padding(
-                                  padding: const EdgeInsets.fromLTRB(
-                                      8, 14, 8, 14),
-                                  child: Text(ques[counter]['options'][i],
-                                    style: TextStyle(fontSize: convW(17,context)),),
-                                )
+                  SizedBox(height: convH(50,context),),
+                  Column(
+                    children: new List.generate(
+                      ques[counter]['options'].length, (i) =>
+                      AnimatedSwitcher(
+                        duration: const Duration(milliseconds: 500),
+                        transitionBuilder: (Widget child,
+                            Animation<double> animation) {
+                          return ScaleTransition(child: child, scale: animation);
+                        },
+                        child: Padding(key: ValueKey<int>(counter),
+                          padding: const EdgeInsets.all(14.0),
+                          child: SizedBox(
+                            width: MediaQuery
+                                .of(context)
+                                .size
+                                .width,
+                            child: AnimatedContainer(
+                              color: buttonColors[i ],
+                              duration: Duration(milliseconds: 300),
+                              child: ElevatedButton(style: ButtonStyle(
+                                  backgroundColor: MaterialStateProperty.all<
+                                      Color>(Colors.transparent)),
+                                  onPressed: () {
+                                    if (!buttonsLocked) {
+                                      switchQuestion(
+                                          ques[counter]['options'][i], i);
+                                    } else {
+                                      return null;
+                                    }
+                                  },
+                                  child: Padding(
+                                    padding: const EdgeInsets.fromLTRB(
+                                        8, 14, 8, 14),
+                                    child: Text(ques[counter]['options'][i],
+                                      style: TextStyle(fontSize: convW(17,context)),),
+                                  )
+                              ),
                             ),
                           ),
                         ),
                       ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),

@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:hp_multiplayer_trivia/View/LoadingScreen.dart';
 
 import '../globals.dart';
 
@@ -11,7 +12,6 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-
 
 
   CollectionReference users = FirebaseFirestore.instance.collection('users');
@@ -24,14 +24,25 @@ class _LoginScreenState extends State<LoginScreen> {
         .get();
     // Call the user's CollectionReference to add a new user
     if (snapShot == null || !snapShot.exists) {
+      print("return users");
       return users
           .add({
         "name": globalUser.isAnonymous ? "Guest" : globalUser.displayName,
         "score": 0,
-        "matches": []
+        "uid": globalUser.uid,
+        "matches": [],
+        'timestamp': DateTime.now().millisecondsSinceEpoch,
       })
-          .then((value) => print("User Added"))
-          .catchError((error) => print("Failed to add user: $error"));
+          .then((value) => {
+            print("made it to then"),
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => LoadingScreen()),
+        )
+      })
+          .catchError((error) => {
+            displayNoInternet(context)
+      });
     }
   }
 
@@ -50,7 +61,7 @@ class _LoginScreenState extends State<LoginScreen> {
         addUser(FirebaseAuth.instance.currentUser.uid);
 
         //print('User is signed in!');
-        Navigator.pushReplacementNamed(context, "/");
+
       }
     });
   }

@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'dart:io';
+
+import 'package:hp_multiplayer_trivia/View/LoadingScreen.dart';
 
 User globalUser;
 //Color darker_blue = Color(0xff141e30);
@@ -43,4 +46,56 @@ double convH(before, context) {
   return MediaQuery.of(context).size.height * modifier;
 }
 
+//Future<bool> checkConnection(context) async {
+//  var connection = await getConnectivity();
+//  if(connection == false) {
+//    _displayNoInternet(context);
+//    return false;
+//  } else {
+//    return true;
+//  }
+//}
+//
+//Future<bool> getConnectivity() async {
+//  try {
+//    final result = await InternetAddress.lookup('example.com');
+//    if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+//      print('Connected to example.com');
+//      return true;
+//    }
+//  } on SocketException catch (_) {
+//    return false;
+//  }
+//}
+
+
+
+Future<void> displayNoInternet(context) async {
+  return showDialog<void>(
+    context: context,
+    barrierDismissible: false, // user must tap button!
+    builder: (BuildContext context) {
+      return AlertDialog(
+        backgroundColor: Colors.black26,
+        title: const Text('Connection Failure', style: TextStyle(color: Colors.white),),
+        content: SingleChildScrollView(
+          child: ListBody(
+            children: const <Widget>[
+              Text('Unable to establish a connection.', style: TextStyle(color: Colors.white)),
+              Text('Please make sure you are connected to the internet.', style: TextStyle(color: Colors.white)),
+            ],
+          ),
+        ),
+        actions: <Widget>[
+          TextButton(
+            child: const Text('Cancel', style: TextStyle(color: Colors.white)),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
+        ],
+      );
+    },
+  );
+}
 

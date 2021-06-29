@@ -40,18 +40,17 @@ class _GetInvolvedScreenState extends State<GetInvolvedScreen> {
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Text(
-                    'Obliviate at the current point in time is almost 100% built, managed, and maintained by me, the developer.\n'
-                      'I hope for this app to be community driven and be the app you want it to be.',
-                    style: TextStyle(fontSize: convW(16,context), color: Colors.white),),
+                    'Want to get involved in making Obliviate better?',
+                    style: TextStyle(fontSize: convW(20,context), color: Colors.white),),
                 ),
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Text(
-                    'How can you get involved? There are several ways. Join our Discord if you would be interested in contributing.',
+                    'We are looking for many talented individuals to help with making questions, art, logo design, discord moderation, and bug testing.',
                     style: TextStyle(fontSize: convW(16,context), color: Colors.white),
                   ),
                 ),
-                SizedBox(height: 8,),
+                SizedBox(height: 40,),
                 InkWell(
                   child: Text(
                     'Join Our Discord',
@@ -61,33 +60,32 @@ class _GetInvolvedScreenState extends State<GetInvolvedScreen> {
                     _launchURL('https://discord.gg/P28VVMQBja');
                   },
                 ),
-                SizedBox(height: convH(20,context),),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text('- Questions\n'
-                      'Have some quiz questions I could add? I am always looking for new questions to keep the app entertaining and challenging.',
-                    style: TextStyle(fontSize: 16, color: Colors.white),),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text('- Art\n'
-                      'I am not an artist as you can see from the design. I am in search of artists to make a bunch of HP themed content for the app.',
-                    style: TextStyle(fontSize: convW(16,context), color: Colors.white),),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text('- Bug Testers / Feature Suggestions\n'
-                      'Lets make Obliviate bug free! I would also love to hear any suggestions that you have.',
-                    style: TextStyle(fontSize: convW(16,context), color: Colors.white),),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text('- Discord Staff\n'
-                      'Needed depending on user volume. Check discord to see if positions are currently open.',
-                    style: TextStyle(fontSize: convW(16,context), color: Colors.white),),
-                ),
+//                Padding(
+//                  padding: const EdgeInsets.all(8.0),
+//                  child: Text('- Questions\n'
+//                      'Have some quiz questions I could add? I am always looking for new questions to keep the app entertaining and challenging.',
+//                    style: TextStyle(fontSize: 16, color: Colors.white),),
+//                ),
+//                Padding(
+//                  padding: const EdgeInsets.all(8.0),
+//                  child: Text('- Art\n'
+//                      'I am not an artist as you can see from the design. I am in search of artists to make a bunch of HP themed content for the app.',
+//                    style: TextStyle(fontSize: convW(16,context), color: Colors.white),),
+//                ),
+//                Padding(
+//                  padding: const EdgeInsets.all(8.0),
+//                  child: Text('- Bug Testers / Feature Suggestions\n'
+//                      'Lets make Obliviate bug free! I would also love to hear any suggestions that you have.',
+//                    style: TextStyle(fontSize: convW(16,context), color: Colors.white),),
+//                ),
+//                Padding(
+//                  padding: const EdgeInsets.all(8.0),
+//                  child: Text('- Discord Staff\n'
+//                      'Needed depending on user volume. Check discord to see if positions are currently open.',
+//                    style: TextStyle(fontSize: convW(16,context), color: Colors.white),),
+//                ),
 
-                SizedBox(height: 30,),
+                SizedBox(height: 40,),
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Text('Contributing in any of these ways will get you added to the Credits page.',

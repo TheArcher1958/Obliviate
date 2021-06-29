@@ -11,6 +11,7 @@ class SearchingScreen extends StatefulWidget {
 
 class _SearchingScreenState extends State<SearchingScreen> with WidgetsBindingObserver {
 
+  var userDocument;
 //  void initState() {
 //    super.initState();
 //
@@ -40,7 +41,10 @@ class _SearchingScreenState extends State<SearchingScreen> with WidgetsBindingOb
 
   @override
   void dispose() {
-    cancelMatchmaking();
+    print('kokokokokokokk');
+    if(userDocument == null) {
+      cancelMatchmaking();
+    }
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
 
@@ -50,6 +54,7 @@ class _SearchingScreenState extends State<SearchingScreen> with WidgetsBindingOb
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     print('State change detected! 🔨');
+    print('kokokokokokokk');
     print(state);
     if(state == AppLifecycleState.paused) {
       cancelMatchmaking();
@@ -65,7 +70,7 @@ class _SearchingScreenState extends State<SearchingScreen> with WidgetsBindingOb
         stream: FirebaseFirestore.instance.collection('matchmaking').doc(globalUser.uid).snapshots(),
         builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
           if (snapshot.hasData && snapshot.data.exists) {
-            var userDocument = snapshot.data;
+            userDocument = snapshot.data;
             //print(userDocument.data().containsKey('gameID'));
             print(userDocument);
             if(userDocument['gameID'] != 'none') {

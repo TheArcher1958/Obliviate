@@ -8,29 +8,39 @@ class GamemodesScreen extends StatefulWidget {
   _GamemodesScreenState createState() => _GamemodesScreenState();
 }
 
-grabQuestion() {
-  CollectionReference questions = FirebaseFirestore.instance.collection('questions');
-  questions.get().then((QuerySnapshot querySnapshot) {
-    querySnapshot.docs.forEach((doc) {
-      print(doc["question"]);
-    });
-  });
-}
+//grabQuestion() {
+//  CollectionReference questions = FirebaseFirestore.instance.collection('questions');
+//  questions.get().then((QuerySnapshot querySnapshot) {
+//    querySnapshot.docs.forEach((doc) {
+//      print(doc["question"]);
+//    });
+//  });
+//}
 
 
 CollectionReference matches = FirebaseFirestore.instance.collection('matchmaking');
-Future<void> addUser() {
+Future<void> addUser(context) {
   return matches
       .doc(globalUser.uid)
       .set({
     'userID': globalUser.uid,
+    'name': !globalUser.isAnonymous
+        ? globalUser.displayName
+        : 'Guest',
     'rank': 0,
     'gameID': 'none',
     'timestamp': DateTime.now().millisecondsSinceEpoch,
   })
-      .then((value) =>
-      print("User Added")
-  ).catchError((error) => print("Failed to add user: $error"));
+      .then((value) => {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => SearchingScreen()),
+    )
+  }
+
+  ).catchError((error) => {
+    displayNoInternet(context)
+  });
 }
 
 
@@ -78,11 +88,8 @@ class _GamemodesScreenState extends State<GamemodesScreen> {
 
               ),
               onPressed: () async {
-                await addUser();
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => SearchingScreen()),
-                );
+                await addUser(context);
+
               },
               child: Text('Multiplayer', style: TextStyle(fontSize: convW(24,context),fontWeight: FontWeight.bold),),
             ),

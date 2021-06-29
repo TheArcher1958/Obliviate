@@ -22,6 +22,48 @@ class _LoadingScreenState extends State<LoadingScreen> {
   var unstableVersion;
   var remoteConfig;
 
+
+
+  Future<void> displayNoInternetLoading() async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: Colors.black26,
+          title: const Text('Connection Failure', style: TextStyle(color: Colors.white),),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: const <Widget>[
+                Text('Unable to establish a connection.', style: TextStyle(color: Colors.white)),
+                Text('Please make sure you are connected to the internet.', style: TextStyle(color: Colors.white)),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Retry', style: TextStyle(color: Colors.white)),
+              onPressed: () {
+                Navigator.of(context).pop();
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => LoadingScreen()),
+                );
+              },
+            ),
+            TextButton(
+              child: const Text('Cancel', style: TextStyle(color: Colors.white)),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+
   Future<void> _showMyDialog() async {
     return showDialog<void>(
       context: context,
@@ -61,6 +103,14 @@ class _LoadingScreenState extends State<LoadingScreen> {
 
   getConfig() async {
     await remoteConfig.fetchAndActivate();
+    await remoteConfig.setConfigSettings(RemoteConfigSettings(
+      fetchTimeout: const Duration(seconds: 10),
+      minimumFetchInterval: const Duration(hours: 1),
+    ));
+    await remoteConfig.setDefaults(<String, dynamic>{
+      'motd': 'Obliviate - Beta',
+      'hello': '0.0.0',
+    });
   }
 
   @override
@@ -68,44 +118,51 @@ class _LoadingScreenState extends State<LoadingScreen> {
     super.initState();
     SystemChrome.setEnabledSystemUIOverlays([]);
 
+
     remoteConfig = RemoteConfig.instance;
     getConfig();
 
     motd = remoteConfig.getString('motd');
     unstableVersion = remoteConfig.getString('must_update_version');
+    print(unstableVersion);
+    if(motd != null && unstableVersion != null && motd != "" && unstableVersion != "") {
+      PackageInfo.fromPlatform().then((PackageInfo packageInfo) {
+        String version = packageInfo.version;
+        Version currentVersion = Version.parse(version);
+        Version unstableVersion2 = Version.parse(unstableVersion);
 
-    PackageInfo.fromPlatform().then((PackageInfo packageInfo) {
-      String version = packageInfo.version;
-      Version currentVersion = Version.parse(version);
-      Version unstableVersion2 = Version.parse(unstableVersion);
 
-
-      if(currentVersion <= unstableVersion2) {
-        _showMyDialog();
-      } else {
-
-        Future.delayed(Duration(seconds: 1), () {
-          FirebaseAuth.instance
-              .authStateChanges()
-              .listen((User user) {
-            if (user == null) {
-  //          print('User is currently signed out!');
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (context) => LoginScreen()),
-              );
-            } else {
-  //          print('User is signed in!');
-              globalUser = user;
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (context) => HomeScreen()),
-              );
-            }
+        if (currentVersion <= unstableVersion2) {
+          _showMyDialog();
+        } else {
+          Future.delayed(Duration(seconds: 1), () {
+            FirebaseAuth.instance
+                .authStateChanges()
+                .listen((User user) {
+              if (user == null) {
+                //          print('User is currently signed out!');
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => LoginScreen()),
+                );
+              } else {
+                //          print('User is signed in!');
+                globalUser = user;
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => HomeScreen()),
+                );
+              }
+            });
           });
-        });
-      }
-    });
+        }
+      });
+    } else {
+      print('No internet?');
+      Future.delayed(Duration.zero, displayNoInternetLoading);
+//      displayNoInternetLoading();
+//      _showMyDialog();
+    }
 
   }
 
@@ -136,7 +193,9 @@ class _LoadingScreenState extends State<LoadingScreen> {
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(motd, textAlign: TextAlign.center, style: TextStyle(fontSize: convW(24,context), color: Colors.white),),
+                motd != null ?
+                  Text(motd, textAlign: TextAlign.center, style: TextStyle(fontSize: convW(24,context), color: Colors.white,fontFamily: "Lumos"),) :
+                  Text('Obliviate - Beta',style: TextStyle(fontSize: convW(24,context),color: Colors.white,fontFamily: "Lumos"),),
                 SizedBox(height: 100,)
               ],
             ),

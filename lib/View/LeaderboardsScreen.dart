@@ -1,8 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
-import 'package:google_mobile_ads/google_mobile_ads.dart';
-
 
 import '../globals.dart';
 
@@ -24,12 +22,12 @@ class _LeaderBoardsScreenState extends State<LeaderBoardsScreen> {
         setState(() {
           topUsers = data.docs;
         });
-    });
+
+    }).catchError((error) => displayNoInternet(context));
   }
 
   @override
   void initState() {
-    print(topUsers);
     getTopPlayers();
     super.initState();
   }
@@ -55,7 +53,6 @@ class _LeaderBoardsScreenState extends State<LeaderBoardsScreen> {
       );
     } else {
       final List fixedList = Iterable<int>.generate(topUsers.length).toList();
-
       return Container(
         child: SingleChildScrollView(
           child: Container(
@@ -109,6 +106,9 @@ class _LeaderBoardsScreenState extends State<LeaderBoardsScreen> {
               ],
             rows: fixedList.map(
                   (index) => DataRow(
+                    color: topUsers[index]['uid'] == globalUser.uid ? MaterialStateProperty.all<
+                        Color>(Color(0xff6c59e6)) : MaterialStateProperty.all<
+                        Color>(Color(0xff243b55)),
                   cells: [
                     DataCell(
                       Text("${index + 1}", style: TextStyle(fontSize: convW(16,context), color: Colors.white,),),
